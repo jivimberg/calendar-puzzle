@@ -41,14 +41,14 @@ impl Shape {
         transposed
     }
 
-    pub fn flip(&self) -> Shape {
+    fn flip(&self) -> Shape {
         let mut result = self.tile_matrix.clone();
         result.iter_mut().for_each(|row| row.reverse());
         Shape { tile_matrix: result }
     }
 
     // TODO remove pub
-    pub fn rotate_90(&self) -> Shape {
+    fn rotate_90(&self) -> Shape {
         let mut result = Self::matrix_transpose(&self.tile_matrix); // first transpose
         result.iter_mut().for_each(|row| row.reverse()); // then reverse each row
         Shape { tile_matrix: result }

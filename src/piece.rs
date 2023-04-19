@@ -23,60 +23,60 @@ impl Piece {
             }),
             Piece::new("Short L".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["🟦", "🟦", "🟦"],
-                    vec!["  ", "  ", "🟦"],
+                    vec!["🟥", "🟥", "🟥"],
+                    vec!["  ", "  ", "🟥"],
                 ]
             }),
             Piece::new("Long L".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["🟦", "🟦", "🟦", "🟦"],
-                    vec!["  ", "  ", "  ", "🟦"],
+                    vec!["🟨", "🟨", "🟨", "🟨"],
+                    vec!["  ", "  ", "  ", "🟨"],
                 ]
             }),
             Piece::new("T".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["🟦", "🟦", "🟦"],
-                    vec!["  ", "🟦", "  "],
-                    vec!["  ", "🟦", "  "],
+                    vec!["🟫", "🟫", "🟫"],
+                    vec!["  ", "🟫", "  "],
+                    vec!["  ", "🟫", "  "],
                 ]
             }),
             Piece::new("S".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["  ", "🟦", "🟦"],
-                    vec!["🟦", "🟦", "  "],
+                    vec!["  ", "🟩", "🟩"],
+                    vec!["🟩", "🟩", "  "],
                 ]
             }),
             Piece::new(".S".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["  ", "  ", "🟦", "🟦"],
-                    vec!["🟦", "🟦", "🟦", "  "],
+                    vec!["  ", "  ", "🟧", "🟧"],
+                    vec!["🟧", "🟧", "🟧", "  "],
                 ]
             }),
             Piece::new("d".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["  ", "🟦"],
-                    vec!["🟦", "🟦"],
-                    vec!["🟦", "🟦"],
+                    vec!["  ", "🟪"],
+                    vec!["🟪", "🟪"],
+                    vec!["🟪", "🟪"],
                 ]
             }),
             Piece::new("U".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["🟦", "  ", "🟦"],
-                    vec!["🟦", "🟦", "🟦"],
+                    vec!["⬜️", "  ", "⬜️"],
+                    vec!["⬜️", "⬜️", "⬜️"],
                 ]
             }),
             Piece::new("Corner".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["🟦", "🟦", "🟦"],
-                    vec!["🟦", "  ", "  "],
-                    vec!["🟦", "  ", "  "],
+                    vec!["⬛️", "⬛️", "⬛️"],
+                    vec!["⬛️", "  ", "  "],
+                    vec!["⬛️", "  ", "  "],
                 ]
             }),
             Piece::new("Z".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["🟦", "🟦", "  "],
-                    vec!["  ", "🟦", "  "],
-                    vec!["  ", "🟦", "🟦"],
+                    vec!["🔳", "🔳", "  "],
+                    vec!["  ", "🔳", "  "],
+                    vec!["  ", "🔳", "🔳"],
                 ]
             }),
         ]
