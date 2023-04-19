@@ -1,19 +1,25 @@
 mod board;
 mod piece;
-mod shape; // TODO should this go in board?
+mod shape;
 
 use board::Board;
 use time::macros::date;
+use crate::board::BoardError;
+use crate::piece::Piece;
 use crate::shape::Shape;
 
 fn main() {
     let board = Board::new(date!(2023 - 02 - 12));
     println!("{}", board);
 
-    for piece in piece::Piece::get_all_pieces().iter() {
-        println!("{}", piece.name);
-        for shape in piece.distinct_shapes.iter() {
-            println!("{}", shape);
+    let all_pieces = piece::Piece::get_all_pieces();
+    let piece_i = &all_pieces[0];
+    for shape in piece_i.distinct_shapes.iter() {
+        match board.add_shape_at_position(shape, (0, 0)) {
+            Ok(new_board) => { println!("{}", new_board); },
+            Err(board_error) => { dbg!(board_error); },
         }
     }
+
+    ()
 }
