@@ -49,8 +49,8 @@ impl Piece {
             }),
             Piece::new(".S".to_string(), Shape {
                 tile_matrix: vec![
-                    vec!["  ", "  ", "🟧", "🟧"],
-                    vec!["🟧", "🟧", "🟧", "  "],
+                    vec!["   ", "   ", " 🟧", " 🟧"],
+                    vec![" 🟧", " 🟧", " 🟧", "   "],
                 ]
             }),
             Piece::new("d".to_string(), Shape {

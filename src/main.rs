@@ -16,7 +16,6 @@ fn main() {
 
     let all_pieces = Piece::get_all_pieces();
     let solved_board = board.solve(all_pieces).unwrap();
-    println!("{}", solved_board);
 
     ()
 }

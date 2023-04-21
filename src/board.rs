@@ -56,6 +56,9 @@ impl Board {
     };
 
     pub(crate) fn solve(self, remaining_pieces: Vec<Piece>) -> Option<Board> {
+        print!("{esc}c", esc = 27 as char); // clear the screen
+        println!("{}", self);
+
         if remaining_pieces.is_empty() {
             return Some(self); // we were able to place all the pieces. It's solved!
         }
@@ -63,8 +66,6 @@ impl Board {
         let (row_start, col_start) = self.find_next_free_tile().unwrap();
 
         for (idx, piece) in remaining_pieces.iter().enumerate() {
-            println! ("Level {}: Trying to add {} at ({}, {})", 10 - remaining_pieces.len(), &piece.name, row_start, col_start);
-            println!("{}", self);
             let mut new_remaining_pieces = remaining_pieces.clone();
             new_remaining_pieces.remove(idx);
             for shape in piece.distinct_shapes.iter() {
@@ -75,10 +76,7 @@ impl Board {
                             None => continue,
                         }
                     },
-                    Err(e) => {
-                        println!("Error: {:?} adding {}", e, &piece.name);
-                        continue
-                    },
+                    Err(e) => continue,
                 };
             }
         }
