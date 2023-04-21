@@ -1,6 +1,8 @@
 use std::fmt;
 use time::Date;
+use piece::Piece;
 use crate::board::BoardError::{OutOfBounds, TileOccupied};
+use crate::piece;
 use crate::shape::Shape;
 
 pub(crate) struct Board {
@@ -53,6 +55,37 @@ impl Board {
         ]
     };
 
+    pub(crate) fn solve(self, remaining_pieces: Vec<Piece>) -> Option<Board> {
+        if remaining_pieces.is_empty() {
+            return Some(self); // we were able to place all the pieces. It's solved!
+        }
+
+        let (row_start, col_start) = self.find_next_free_tile().unwrap();
+
+        for (idx, piece) in remaining_pieces.iter().enumerate() {
+            println! ("Level {}: Trying to add {} at ({}, {})", 10 - remaining_pieces.len(), &piece.name, row_start, col_start);
+            println!("{}", self);
+            let mut new_remaining_pieces = remaining_pieces.clone();
+            new_remaining_pieces.remove(idx);
+            for shape in piece.distinct_shapes.iter() {
+                match self.add_shape_at_position(shape, (row_start, col_start)) {
+                    Ok(new_board) => {
+                        match new_board.solve(new_remaining_pieces.clone()) {
+                            Some(solved_board) => return Some(solved_board),
+                            None => continue,
+                        }
+                    },
+                    Err(e) => {
+                        println!("Error: {:?} adding {}", e, &piece.name);
+                        continue
+                    },
+                };
+            }
+        }
+
+        None
+    }
+
     fn find_next_free_tile(&self) -> Option<(usize, usize)> {
         for (row_idx, row) in self.tiles.iter().enumerate() {
             for (col_idx, tile_value) in row.iter().enumerate() {
@@ -79,7 +112,7 @@ impl Board {
         // check that the shape doesn't overlap with any existing tiles
         for (shape_row_idx, shape_row) in shape.tile_matrix.iter().enumerate() {
             for (shape_col_idx, shape_tile_value) in shape_row.iter().enumerate() {
-                let shape_tile_is_not_empty = !shape_tile_value.is_empty();
+                let shape_tile_is_not_empty = !shape_tile_value.trim().is_empty();
                 let board_tile_is_occupied = self.tiles[row_start + shape_row_idx][col_start + shape_col_idx] != Self::EMPTY_TILE;
                 if shape_tile_is_not_empty && board_tile_is_occupied {
                     return Err(TileOccupied);
@@ -91,7 +124,7 @@ impl Board {
         let mut new_tiles = self.tiles.clone();
         for (shape_row_idx, shape_row) in shape.tile_matrix.iter().enumerate() {
             for (shape_col_idx, shape_tile_value) in shape_row.iter().enumerate() {
-                if !shape_tile_value.is_empty() {
+                if !shape_tile_value.trim().is_empty() {
                     new_tiles[row_start + shape_row_idx][col_start + shape_col_idx] = shape_tile_value;
                 }
             }
@@ -114,8 +147,8 @@ pub enum BoardError {
 
 impl fmt::Display for Board {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for (row_idx, row) in self.tiles.iter().enumerate() {
-            for (col_idx, tile_value) in row.iter().enumerate() {
+        for  row in self.tiles.iter() {
+            for tile_value in row.iter() {
                 write!(f, " {}", tile_value)?;
             }
             writeln!(f)?;
