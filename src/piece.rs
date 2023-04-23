@@ -3,6 +3,7 @@ use crate::shape::Shape;
 
 #[derive(Clone, Debug)]
 pub(crate) struct Piece {
+    #[allow(dead_code)]
     pub(crate) name: String,
     pub(crate) distinct_shapes: HashSet<Shape>
 }

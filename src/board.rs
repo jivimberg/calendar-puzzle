@@ -1,24 +1,26 @@
 use std::fmt;
-use time::Date;
+
+use chrono::{Datelike, Month, NaiveDate};
+
+use num_traits::FromPrimitive;
 use piece::Piece;
+
 use crate::board::BoardError::{OutOfBounds, TileOccupied};
 use crate::piece;
 use crate::shape::Shape;
 
 pub(crate) struct Board {
-    date: Date,
     tiles: [[&'static str; 7]; 8],
 }
 
 impl Board {
-    pub fn new(date: Date) -> Self {
+    pub fn new(date: NaiveDate) -> Self {
         Self {
-            date,
             tiles: Self::init_tiles(date),
         }
     }
 
-    fn init_tiles(date: Date) -> [[&'static str; 7]; 8] {
+    fn init_tiles(date: NaiveDate) -> [[&'static str; 7]; 8] {
         let mut tiles = [[Self::EMPTY_TILE; 7]; 8]; // rows x columns
 
         // block top right tiles
@@ -31,13 +33,42 @@ impl Board {
         tiles[7][2] = Self::BLOCKED_TILE;
         tiles[7][3] = Self::BLOCKED_TILE;
 
+        let (month_coord, day_coord, weekday_coord) = Self::find_engravings_coordinates(date);
+        let(month_row, month_col) = month_coord;
+        let(day_row, day_col) = day_coord;
+        let(weekday_row, weekday_col) = weekday_coord;
+
         // Block date tiles
-        // TODO by default I'll hardcode the date: Feb 12th Sunday
-        tiles[0][1] = Self::ENGRAVINGS[0][1]; // Feb
-        tiles[3][4] = Self::ENGRAVINGS[3][4]; // 12
-        tiles[6][3] = Self::ENGRAVINGS[6][3]; // Sunday
+        tiles[month_row][month_col] = Self::ENGRAVINGS[month_row][month_col];
+        tiles[day_row][day_col] = Self::ENGRAVINGS[day_row][day_col];
+        tiles[weekday_row][weekday_col] = Self::ENGRAVINGS[weekday_row][weekday_col];
 
         tiles
+    }
+
+    fn find_engravings_coordinates(date: NaiveDate) -> ((usize, usize) , (usize, usize), (usize, usize)) {
+        let month_name_prefix = &Month::from_u32(date.month()).unwrap().name()[..3];
+        let day = date.day() as usize;
+        let weekday_prefix = &date.weekday().to_string()[..3];
+
+        let mut month_coordinates = None;
+        let mut day_coordinates = None;
+        let mut weekday_coordinates =None;
+
+        for  (row_idx, row) in Self::ENGRAVINGS.iter().enumerate() {
+            for (col_idx, engraving) in row.iter().enumerate() {
+                if engraving == &month_name_prefix {
+                    month_coordinates = Some((row_idx, col_idx));
+                } else if engraving.trim() == &day.to_string() {
+                    day_coordinates = Some((row_idx, col_idx));
+                } else if engraving == &weekday_prefix {
+                    weekday_coordinates = Some((row_idx, col_idx));
+                }
+            }
+        }
+
+
+        (month_coordinates.unwrap(), day_coordinates.unwrap(), weekday_coordinates.unwrap())
     }
 
     const EMPTY_TILE: &'static str = " ▢ ";
@@ -76,7 +107,7 @@ impl Board {
                             None => continue,
                         }
                     },
-                    Err(e) => continue,
+                    Err(_e) => continue,
                 };
             }
         }
@@ -130,7 +161,6 @@ impl Board {
 
         Ok(
             Board {
-                date: self.date,
                 tiles: new_tiles,
             }
         )

@@ -1,21 +1,28 @@
-use time::macros::date;
+use std::io;
+
+use chrono::NaiveDate;
 
 use board::Board;
 
-use crate::board::BoardError;
 use crate::piece::Piece;
-use crate::shape::Shape;
 
 mod board;
 mod piece;
 mod shape;
 
 fn main() {
-    let board = Board::new(date!(2023 - 02 - 12));
+    println!("Tira una fecha wachin! (YYYY/MM/DD)");
+    let mut date_input = String::new();
+    io::stdin().read_line(&mut date_input).unwrap();
+    println!("{}", &date_input);
+    let date = NaiveDate::parse_from_str(&date_input.trim(), "%Y/%m/%d").unwrap();
+    println!("{}", date);
+
+    let board = Board::new(date);
     println!("{}", board);
 
     let all_pieces = Piece::get_all_pieces();
-    let solved_board = board.solve(all_pieces).unwrap();
+    board.solve(all_pieces).unwrap();
 
     ()
 }
