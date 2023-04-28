@@ -1,4 +1,5 @@
 use std::io;
+use std::time::Instant;
 
 use chrono::NaiveDate;
 
@@ -14,15 +15,29 @@ fn main() {
     println!("Tira una fecha wachin! (YYYY/MM/DD)");
     let mut date_input = String::new();
     io::stdin().read_line(&mut date_input).unwrap();
-    println!("{}", &date_input);
     let date = NaiveDate::parse_from_str(&date_input.trim(), "%Y/%m/%d").unwrap();
-    println!("{}", date);
 
     let board = Board::new(date);
     println!("{}", board);
 
     let all_pieces = Piece::get_all_pieces();
-    board.solve(all_pieces).unwrap();
+
+    // TODO use a real benchmarking framework
+    let instant = Instant::now();
+
+    // Find single Solution
+    // board.solve(all_pieces).unwrap();
+
+    // Find all solutions
+    let all_solutions = board.find_solutions(all_pieces, None);
+    println!("Found {} solutions", all_solutions.len());
+
+    // print all solutions
+    // for solution in all_solutions {
+    //     println!("{}", solution);
+    // }
+
+    println!("Elapsed time: {:.2?}", instant.elapsed());
 
     ()
 }

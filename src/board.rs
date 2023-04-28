@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fmt;
 
 use chrono::{Datelike, Month, NaiveDate};
@@ -9,6 +10,7 @@ use crate::board::BoardError::{OutOfBounds, TileOccupied};
 use crate::piece;
 use crate::shape::Shape;
 
+#[derive(Eq, PartialEq, Hash, Debug)]
 pub(crate) struct Board {
     tiles: [[&'static str; 7]; 8],
 }
@@ -87,32 +89,41 @@ impl Board {
     };
 
     pub(crate) fn solve(self, remaining_pieces: Vec<Piece>) -> Option<Board> {
-        print!("{esc}c", esc = 27 as char); // clear the screen
-        println!("{}", self);
+        return self.find_solutions(remaining_pieces, Some(1)).into_iter().next();
+    }
+
+    pub(crate) fn find_solutions(self, remaining_pieces: Vec<Piece>, max_solutions: Option<usize>) -> HashSet<Board> {
+        // print!("{esc}c", esc = 27 as char); // clear the screen
+        // println!("{}", self);
 
         if remaining_pieces.is_empty() {
-            return Some(self); // we were able to place all the pieces. It's solved!
+            let mut solutions = HashSet::new();
+            solutions.insert(self); // we were able to place all the pieces. It's solved!
+            return solutions;
         }
 
         let (row_start, col_start) = self.find_next_free_tile().unwrap();
 
+        let mut solutions = HashSet::new();
         for (idx, piece) in remaining_pieces.iter().enumerate() {
             let mut new_remaining_pieces = remaining_pieces.clone();
             new_remaining_pieces.remove(idx);
             for shape in piece.distinct_shapes.iter() {
                 match self.add_shape_at_position(shape, (row_start, col_start)) {
                     Ok(new_board) => {
-                        match new_board.solve(new_remaining_pieces.clone()) {
-                            Some(solved_board) => return Some(solved_board),
-                            None => continue,
+                        let new_solutions = new_board.find_solutions(new_remaining_pieces.clone(), max_solutions);
+                        solutions.extend(new_solutions);
+
+                        if max_solutions.is_some() && solutions.len() >= max_solutions.unwrap() {
+                            return solutions;
                         }
                     },
-                    Err(_e) => continue,
+                    Err(_e) => {}
                 };
             }
         }
 
-        None
+        return solutions
     }
 
     fn find_next_free_tile(&self) -> Option<(usize, usize)> {
