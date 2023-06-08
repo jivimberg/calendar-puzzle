@@ -47,7 +47,6 @@ impl Shape {
         Shape { tile_matrix: result }
     }
 
-    // TODO remove pub
     fn rotate_90(&self) -> Shape {
         let mut result = Self::matrix_transpose(&self.tile_matrix); // first transpose
         result.iter_mut().for_each(|row| row.reverse()); // then reverse each row
