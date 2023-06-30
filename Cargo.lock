@@ -53,6 +53,7 @@ dependencies = [
  "chrono",
  "criterion",
  "num-traits",
+ "rayon",
 ]
 
 [[package]]

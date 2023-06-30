@@ -12,7 +12,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 
 criterion_group!(
     name = benches;
-    config = Criterion::default().sample_size(10);
+    config = Criterion::default().sample_size(10).measurement_time(Duration::from_secs(60));
     targets = criterion_benchmark
 );
 criterion_main!(benches);

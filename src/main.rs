@@ -2,6 +2,7 @@ use std::io;
 use std::time::Instant;
 
 use chrono::NaiveDate;
+use rayon::current_num_threads;
 
 use board::Board;
 
@@ -29,7 +30,8 @@ fn main() {
     // board.solve(all_pieces).unwrap();
 
     // Find all solutions
-    let all_solutions = board.find_solutions(all_pieces, None);
+    // println!("Number of threads: {:.2?}", current_num_threads());
+    let all_solutions = board.find_solutions(all_pieces);
     println!("Found {} solutions", all_solutions.len());
 
     // print all solutions

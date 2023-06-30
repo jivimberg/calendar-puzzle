@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use crate::shape::Shape;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Piece {
     #[allow(dead_code)]
     pub(crate) name: String,
