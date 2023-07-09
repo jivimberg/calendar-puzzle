@@ -104,15 +104,16 @@ impl Board {
 
         return remaining_pieces
             .par_iter()
-            .flat_map(|piece| piece.distinct_shapes
-                .iter()
-                .map(|shape| (piece, shape))
-                .collect::<Vec<(&Piece, &Shape)>>()
-            )
-            .filter_map(|(piece, shape)| {
-                // println!("Thread: {:?}", current_thread_index());
+            .flat_map(|piece| {
                 let mut new_remaining_pieces = remaining_pieces.clone();
                 new_remaining_pieces.retain(|x| x != piece);
+                piece.distinct_shapes
+                    .iter()
+                    .map(|shape| (new_remaining_pieces.clone(), shape))
+                    .collect::<Vec<(Vec<Piece>, &Shape)>>()
+            })
+            .filter_map(|(new_remaining_pieces, shape)| {
+                // println!("Thread: {:?}", current_thread_index());
                 match self.add_shape_at_position(shape, (row_start, col_start)) {
                     Ok(new_board) => Some(new_board.find_solutions(new_remaining_pieces)),
                     Err(_) => None,
