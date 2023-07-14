@@ -6,10 +6,9 @@ use chrono::{Datelike, Month, NaiveDate};
 use num_traits::FromPrimitive;
 use rayon::current_thread_index;
 use rayon::prelude::*;
-use piece::Piece;
 
 use crate::board::BoardError::{OutOfBounds, TileOccupied};
-use crate::piece;
+use crate::piece::ALL_PIECES;
 use crate::shape::Shape;
 
 #[derive(Eq, PartialEq, Hash, Debug)]
@@ -90,11 +89,15 @@ impl Board {
         ]
     };
 
-    pub(crate) fn find_solutions(self, remaining_pieces: Vec<Piece>) -> HashSet<Board> {
+    pub fn find_solutions(self) -> HashSet<Board> {
+        return self.do_find_solutions(&[true; 10]);
+    }
+
+    fn do_find_solutions(self, available_pieces_idx: &[bool]) -> HashSet<Board> {
         // print!("{esc}c", esc = 27 as char); // clear the screen
         // println!("{}", self);
 
-        if remaining_pieces.is_empty() {
+        if available_pieces_idx.iter().all(|&is_available| is_available == false) {
             let mut solutions = HashSet::new();
             solutions.insert(self); // we were able to place all the pieces. It's solved!
             return solutions;
@@ -102,20 +105,25 @@ impl Board {
 
         let (row_start, col_start) = self.find_next_free_tile().unwrap();
 
-        return remaining_pieces
+        return available_pieces_idx
             .par_iter()
-            .flat_map(|piece| {
-                let mut new_remaining_pieces = remaining_pieces.clone();
-                new_remaining_pieces.retain(|x| x != piece);
+            .enumerate()
+            .filter(|(_, is_available)| **is_available)
+            .map(|(idx, _)| (idx, &ALL_PIECES[idx]))
+            .flat_map(|(idx, piece)| {
+                let mut new_available_pieces_idx: [bool; 10] = [true; 10];
+                new_available_pieces_idx.copy_from_slice(available_pieces_idx);
+                new_available_pieces_idx[idx] = false;
+
                 piece.distinct_shapes
                     .iter()
-                    .map(|shape| (new_remaining_pieces.clone(), shape))
-                    .collect::<Vec<(Vec<Piece>, &Shape)>>()
+                    .map(|shape| (new_available_pieces_idx, shape))
+                    .collect::<Vec<([bool; 10], &Shape)>>()
             })
-            .filter_map(|(new_remaining_pieces, shape)| {
+            .filter_map(|(new_available_pieces_idx, shape)| {
                 // println!("Thread: {:?}", current_thread_index());
                 match self.add_shape_at_position(shape, (row_start, col_start)) {
-                    Ok(new_board) => Some(new_board.find_solutions(new_remaining_pieces)),
+                    Ok(new_board) => Some(new_board.do_find_solutions(&new_available_pieces_idx)),
                     Err(_) => None,
                 }
             })

@@ -11,6 +11,7 @@ path = "src/lib.rs"
 
 [dependencies]
 chrono = "0.4"
+lazy_static = "1.4.0"
 num-traits = "0.2"
 rayon = "1.7.0"
 

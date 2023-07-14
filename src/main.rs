@@ -21,8 +21,6 @@ fn main() {
     let board = Board::new(date);
     println!("{}", board);
 
-    let all_pieces = Piece::get_all_pieces();
-
     // TODO use a real benchmarking framework
     let instant = Instant::now();
 
@@ -31,7 +29,7 @@ fn main() {
 
     // Find all solutions
     // println!("Number of threads: {:.2?}", current_num_threads());
-    let all_solutions = board.find_solutions(all_pieces);
+    let all_solutions = board.find_solutions();
     println!("Found {} solutions", all_solutions.len());
 
     // print all solutions
