@@ -13,6 +13,34 @@ mod piece;
 mod shape;
 
 fn main() {
+    count_solutions_for_year();
+
+    ()
+}
+
+#[allow(dead_code)]
+fn count_solutions_for_year() {
+    println!("Tira un año wachin! (YYYY)");
+    let mut year_input = String::new();
+    io::stdin().read_line(&mut year_input).unwrap();
+    let year = year_input.trim().parse::<i32>().unwrap();
+
+    let instant = Instant::now();
+
+    for month in 1..=12 {
+        for day in 1..=31 {
+            if let Some(date) = NaiveDate::from_ymd_opt(year, month, day) {
+                let board = Board::new(date);
+                let solutions = board.find_solutions().len();
+                println!("{}: {}", date, solutions);
+            }
+        }
+    }
+    println!("Elapsed time: {:.2?}", instant.elapsed());
+}
+
+#[allow(dead_code)]
+fn find_solutions_for_date() {
     println!("Tira una fecha wachin! (YYYY/MM/DD)");
     let mut date_input = String::new();
     io::stdin().read_line(&mut date_input).unwrap();
@@ -21,7 +49,6 @@ fn main() {
     let board = Board::new(date);
     println!("{}", board);
 
-    // TODO use a real benchmarking framework
     let instant = Instant::now();
 
     // Find single Solution
@@ -38,6 +65,4 @@ fn main() {
     // }
 
     println!("Elapsed time: {:.2?}", instant.elapsed());
-
-    ()
 }
