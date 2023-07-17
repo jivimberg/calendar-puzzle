@@ -6,7 +6,7 @@ use rayon::current_num_threads;
 
 use board::Board;
 
-use crate::piece::Piece;
+use crate::piece::{ALL_PIECES, Piece};
 
 mod board;
 mod piece;

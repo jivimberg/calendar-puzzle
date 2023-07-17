@@ -143,14 +143,27 @@ impl Board {
     }
 
     pub(crate) fn add_shape_at_position(&self, shape: &Shape, (row_start, col_start): (usize, usize)) -> Result<Board, BoardError> {
-        // check bounds
+        // find index of the first non empty tile
+        let first_non_empty_tile_idx = shape.tile_matrix[0]
+            .iter()
+            .position(|tile| !tile.trim().is_empty())
+            .unwrap(); // There always is at least one non empty tile in the first row of the shape
+
+        // displace col_start (this will also be used later to add the shape to the board)
+        let displaced_col_start = match col_start.checked_sub(first_non_empty_tile_idx) {
+            Some(displaced) => displaced,
+            None => return Err(OutOfBounds)
+        };
+
+        // check bounds to the bottom
         let shape_max_row_idx = shape.tile_matrix.len() - 1;
         if (row_start + shape_max_row_idx) >= self.tiles.len() {
             return Err(OutOfBounds);
         }
 
+        // check bounds to the right
         let col_max_row_idx = shape.tile_matrix[0].len() - 1;
-        if (col_start + col_max_row_idx) >= self.tiles[0].len() {
+        if (displaced_col_start + col_max_row_idx) >= self.tiles[0].len() {
             return Err(OutOfBounds);
         }
 
@@ -158,7 +171,7 @@ impl Board {
         for (shape_row_idx, shape_row) in shape.tile_matrix.iter().enumerate() {
             for (shape_col_idx, shape_tile_value) in shape_row.iter().enumerate() {
                 let shape_tile_is_not_empty = !shape_tile_value.trim().is_empty();
-                let board_tile_is_occupied = self.tiles[row_start + shape_row_idx][col_start + shape_col_idx] != Self::EMPTY_TILE;
+                let board_tile_is_occupied = self.tiles[row_start + shape_row_idx][displaced_col_start + shape_col_idx] != Self::EMPTY_TILE;
                 if shape_tile_is_not_empty && board_tile_is_occupied {
                     return Err(TileOccupied);
                 }
@@ -170,7 +183,7 @@ impl Board {
         for (shape_row_idx, shape_row) in shape.tile_matrix.iter().enumerate() {
             for (shape_col_idx, shape_tile_value) in shape_row.iter().enumerate() {
                 if !shape_tile_value.trim().is_empty() {
-                    new_tiles[row_start + shape_row_idx][col_start + shape_col_idx] = shape_tile_value;
+                    new_tiles[row_start + shape_row_idx][displaced_col_start + shape_col_idx] = shape_tile_value;
                 }
             }
         }
